@@ -15,8 +15,6 @@
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
-    let player;
-
     function getVideoId() {
         const params = new URLSearchParams(window.location.search);
         return params.get("v");
@@ -27,16 +25,9 @@
             videoId: getVideoId(),
             playerVars: {
                 autoplay: 1,
-                mute: 0,
+                mute: 1,
                 rel: 0,
                 controls: 1
-            },
-            events: {
-                onStateChange: function(event) {
-                    if (event.data === 0) {
-                        Android.onVideoEnd();
-                    }
-                }
             }
         });
     }
