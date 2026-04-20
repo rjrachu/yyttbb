@@ -17,36 +17,26 @@
 <script>
     var player;
 
-    function getVideoId() {
-        const params = new URLSearchParams(window.location.search);
-        return params.get("v");
-    }
-
-    function loadPlayer() {
-        const videoId = getVideoId();
-
-        if (player) {
-            player.destroy(); // 🔥 IMPORTANT FIX
-        }
-
+    function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
-            videoId: videoId,
             playerVars: {
                 autoplay: 1,
-                mute: 0,
+                mute: 1,
                 rel: 0,
                 controls: 1
             }
         });
+
+        const videoId = getVideoId();
+        if (videoId) {
+            player.loadVideoById(videoId);
+        }
     }
 
-    function onYouTubeIframeAPIReady() {
-        loadPlayer();
-    }
-
-    // 🔥 This is triggered when Android reloads same page
-    window.onVideoChange = function () {
-        loadPlayer();
+    function playVideo(videoId) {
+        if (player) {
+            player.loadVideoById(videoId);
+        }
     }
 </script>
 
