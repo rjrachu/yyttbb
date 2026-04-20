@@ -24,9 +24,7 @@
 
     function createPlayer(videoId) {
         if (player) {
-            try {
-                player.destroy();
-            } catch (e) {}
+            try { player.destroy(); } catch (e) {}
         }
 
         player = new YT.Player('player', {
@@ -36,15 +34,26 @@
                 mute: 0,
                 rel: 0,
                 controls: 1,
-                showInfo: 0,
                 modestbranding: 1
             },
             events: {
                 onReady: function(event) {
                     event.target.playVideo();
                 },
+
+                // 🔥 IMPORTANT PART
+                onStateChange: function(event) {
+                    if (event.data === YT.PlayerState.ENDED) {
+                        if (window.Android && Android.onVideoEnded) {
+                            Android.onVideoEnded();
+                        }
+                    }
+                },
+
                 onError: function(e) {
-                    console.log("YT Error:", e.data);
+                    if (window.Android && Android.onError) {
+                        Android.onError(e.data);
+                    }
                 }
             }
         });
@@ -55,7 +64,6 @@
         createPlayer(videoId);
     }
 
-   
     window.addEventListener("load", function () {
         const videoId = getVideoId();
 
