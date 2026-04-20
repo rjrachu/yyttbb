@@ -17,27 +17,50 @@
 <script>
     var player;
 
-    function onYouTubeIframeAPIReady() {
+    function getVideoId() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get("v");
+    }
+
+    function createPlayer(videoId) {
+        if (player) {
+            try {
+                player.destroy();
+            } catch (e) {}
+        }
+
         player = new YT.Player('player', {
+            videoId: videoId,
             playerVars: {
                 autoplay: 1,
-                mute: 1,
+                mute: 1, // 🔥 MUST for autoplay stability
                 rel: 0,
                 controls: 1
+            },
+            events: {
+                onReady: function(event) {
+                    event.target.playVideo();
+                },
+                onError: function(e) {
+                    console.log("YT Error:", e.data);
+                }
             }
         });
+    }
 
+    function onYouTubeIframeAPIReady() {
         const videoId = getVideoId();
-        if (videoId) {
-            player.loadVideoById(videoId);
-        }
+        createPlayer(videoId);
     }
 
-    function playVideo(videoId) {
-        if (player) {
-            player.loadVideoById(videoId);
+    // 🔥 EXTRA SAFETY: handle reload issues
+    window.addEventListener("load", function () {
+        const videoId = getVideoId();
+
+        if (window.YT && YT.Player) {
+            createPlayer(videoId);
         }
-    }
+    });
 </script>
 
 </body>
