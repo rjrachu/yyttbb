@@ -15,14 +15,22 @@
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
+    var player;
+
     function getVideoId() {
         const params = new URLSearchParams(window.location.search);
         return params.get("v");
     }
 
-    function onYouTubeIframeAPIReady() {
+    function loadPlayer() {
+        const videoId = getVideoId();
+
+        if (player) {
+            player.destroy(); // 🔥 IMPORTANT FIX
+        }
+
         player = new YT.Player('player', {
-            videoId: getVideoId(),
+            videoId: videoId,
             playerVars: {
                 autoplay: 1,
                 mute: 0,
@@ -30,6 +38,15 @@
                 controls: 1
             }
         });
+    }
+
+    function onYouTubeIframeAPIReady() {
+        loadPlayer();
+    }
+
+    // 🔥 This is triggered when Android reloads same page
+    window.onVideoChange = function () {
+        loadPlayer();
     }
 </script>
 
